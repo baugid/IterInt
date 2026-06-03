@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Print["****************** IterInt v1.0 ******************\n* Authors: Gideon Baur, Claude Duhr              *\n* Email: gbaur@uni-bonn.de, cduhr@uni-bonn.de    *\n* arXiv: 26XX.XXXXX                              *\n**************************************************"];
+Print["****************** IterInt v1.0 ******************\n* Authors: Gideon Baur, Claude Duhr              *\n* Email: gbaur@uni-bonn.de, cduhr@uni-bonn.de    *\n* arXiv: 2606.02744                              *\n**************************************************"];
 
 
 BeginPackage["IterInt`"]

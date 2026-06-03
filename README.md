@@ -1,7 +1,7 @@
 # IterInt
 
 A small library for C++ or Mathematica to quickly numerically evaluate iterated Integrals.
-Detailed information can be found in the accompaning paper: [2606.XXXXX](https://arxiv.org/abs/2606.XXXXX)
+Detailed information can be found in the accompaning paper: [2606.02744](http://arxiv.org/abs/2606.02744)
 
 ## Getting Started
 
@@ -9,7 +9,7 @@ To obtain the code please just clone/download this repository.
 Both the C++ and Mathematica versions provide a similar feature set and are generally independent from each other.
 We also provide an interface to call the C++ code from within Mathematica.
 In this repository both versions as well as accompaning example codes are provided.
-For a detailed description of the available feature set we refer again to the [paper](https://arxiv.org/abs/2606.XXXXX).
+For a detailed description of the available feature set we refer again to the [paper](http://arxiv.org/abs/2606.02744).
 
 ### Mathematica
 
