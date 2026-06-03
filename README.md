@@ -13,7 +13,10 @@ For a detailed description of the available feature set we refer again to the [p
 
 ### Mathematica
 
-To use the library no further dependencies are necessary. The example notebook can be easily evaluated, if `IterInt.m` is located in the same directory.
+To use the library no further dependencies are necessary. The main parts of the library should work with Mathematica 10.0 or newer.
+It is validated to work with Mathematica 12. In case the interface to the C++ code is to be used, Mathematica 13.3 or newer is required.
+
+The example notebook can be easily evaluated, if `IterInt.m` is located in the same directory.
 In general the library can directly be loaded using
 ```Mathematica
 Get["IterInt`"]

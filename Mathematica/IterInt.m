@@ -76,14 +76,34 @@ Begin["Private`"];
 
 If[Global`$NativeIteratedIntegral===True,
 (*load the C functions*)
-libraryFile = FindLibrary[DirectoryName[$InputFileName]<>"libIntegrate"];
-evalIntegrF = ForeignFunctionLoad[libraryFile,"plainIntegrate",{{"CDouble","CDouble"},"OpaqueRawPointer","RawPointer"::[{"CDouble","CDouble"}],"UnsignedInteger64","CDouble","CDouble","CDouble","CDouble","CDouble",{"CDouble","CDouble"}}->{"CDouble","CDouble"}];
-evalIntegrSplitF = ForeignFunctionLoad[libraryFile,"splittingPlainIntegrate",{{"CDouble","CDouble"},"OpaqueRawPointer","RawPointer"::[{"CDouble","CDouble"}],"UnsignedInteger64","CDouble","CDouble","CDouble","CDouble","CDouble","CDouble",{"CDouble","CDouble"}}->{"CDouble","CDouble"}];
-treeIntegrateF = ForeignFunctionLoad[libraryFile,"treeIntegrate",{{"CDouble","CDouble"},"OpaqueRawPointer","RawPointer"::[{"CDouble","CDouble"}],"UnsignedInteger64",
-"RawPointer"::["RawPointer"::["UnsignedInteger64"]],"UnsignedInteger64","CDouble","CDouble","CDouble","CDouble","CDouble",{"CDouble","CDouble"}}->"RawPointer"::[{"CDouble","CDouble"}]];
-treeIntegrateSplitF = ForeignFunctionLoad[libraryFile,"splittingTreeIntegrate",{{"CDouble","CDouble"},"OpaqueRawPointer","RawPointer"::[{"CDouble","CDouble"}],"UnsignedInteger64",
-"RawPointer"::["RawPointer"::["UnsignedInteger64"]],"UnsignedInteger64","CDouble","CDouble","CDouble","CDouble","CDouble","CDouble",{"CDouble","CDouble"}}->"RawPointer"::[{"CDouble","CDouble"}]];
-arrayDelF = ForeignFunctionLoad[libraryFile,"deleteCmplxArray",{"RawPointer"::[{"CDouble","CDouble"}]}->"Void"];
+libraryFile = FindLibrary[StringJoin[DirectoryName[$InputFileName],"libIntegrate"]];
+evalIntegrF = ForeignFunctionLoad[libraryFile,"plainIntegrate",{{"CDouble","CDouble"},"OpaqueRawPointer",TypeSpecifier["RawPointer"][{"CDouble","CDouble"}],"UnsignedInteger64","CDouble","CDouble","CDouble","CDouble","CDouble",{"CDouble","CDouble"}}->{"CDouble","CDouble"}];
+evalIntegrSplitF = ForeignFunctionLoad[libraryFile,"splittingPlainIntegrate",{{"CDouble","CDouble"},"OpaqueRawPointer",TypeSpecifier["RawPointer"][{"CDouble","CDouble"}],"UnsignedInteger64","CDouble","CDouble","CDouble","CDouble","CDouble","CDouble",{"CDouble","CDouble"}}->{"CDouble","CDouble"}];
+treeIntegrateF = ForeignFunctionLoad[libraryFile,"treeIntegrate",{{"CDouble","CDouble"},"OpaqueRawPointer",TypeSpecifier["RawPointer"][{"CDouble","CDouble"}],"UnsignedInteger64",
+\!\(\*
+TagBox[
+StyleBox[
+RowBox[{
+RowBox[{"TypeSpecifier", "[", "\"\<RawPointer\>\"", "]"}], "[", 
+RowBox[{
+RowBox[{"TypeSpecifier", "[", "\"\<RawPointer\>\"", "]"}], "[", "\"\<UnsignedInteger64\>\"", "]"}], "]"}],
+ShowSpecialCharacters->False,
+ShowStringCharacters->True,
+NumberMarks->True],
+FullForm]\),"UnsignedInteger64","CDouble","CDouble","CDouble","CDouble","CDouble",{"CDouble","CDouble"}}->TypeSpecifier["RawPointer"][{"CDouble","CDouble"}]];
+treeIntegrateSplitF = ForeignFunctionLoad[libraryFile,"splittingTreeIntegrate",{{"CDouble","CDouble"},"OpaqueRawPointer",TypeSpecifier["RawPointer"][{"CDouble","CDouble"}],"UnsignedInteger64",
+\!\(\*
+TagBox[
+StyleBox[
+RowBox[{
+RowBox[{"TypeSpecifier", "[", "\"\<RawPointer\>\"", "]"}], "[", 
+RowBox[{
+RowBox[{"TypeSpecifier", "[", "\"\<RawPointer\>\"", "]"}], "[", "\"\<UnsignedInteger64\>\"", "]"}], "]"}],
+ShowSpecialCharacters->False,
+ShowStringCharacters->True,
+NumberMarks->True],
+FullForm]\),"UnsignedInteger64","CDouble","CDouble","CDouble","CDouble","CDouble","CDouble",{"CDouble","CDouble"}}->TypeSpecifier["RawPointer"][{"CDouble","CDouble"}]];
+arrayDelF = ForeignFunctionLoad[libraryFile,"deleteCmplxArray",{TypeSpecifier["RawPointer"][{"CDouble","CDouble"}]}->"Void"];
 
 Options[plainIntegrateC]={epsAbs->10^-12,epsRel->10^-12,hStart->1*10^-5,hMax->1,startRegulator->0,regulator->1};
 plainIntegrateC[integrands__List,zVal_,OptionsPattern[]]:=Module[{functions,funcMem,residues,resMem},
@@ -111,7 +131,15 @@ funcMem=RawMemoryExport[functions,"OpaqueRawPointer"];
 resMem=RawMemoryExport[residues,{"CDouble","CDouble"}];
 integralLists=Prepend[#-1,Length[#]]&/@integrals;
 integralMemberMem=RawMemoryExport[#,"UnsignedInteger64"]&/@integralLists;
-integralMem=RawMemoryExport[integralMemberMem,"RawPointer"::["UnsignedInteger64"]];
+integralMem=RawMemoryExport[integralMemberMem,\!\(\*
+TagBox[
+StyleBox[
+RowBox[{
+RowBox[{"TypeSpecifier", "[", "\"\<RawPointer\>\"", "]"}], "[", "\"\<UnsignedInteger64\>\"", "]"}],
+ShowSpecialCharacters->False,
+ShowStringCharacters->True,
+NumberMarks->True],
+FullForm]\)];
 res=treeIntegrateF[N[ReIm[zVal]],funcMem,resMem,Length[residues],integralMem,Length[integrals],OptionValue[epsAbs]//N,OptionValue[epsRel]//N,OptionValue[hStart]//N,OptionValue[hMax]//N,OptionValue[startRegulator]//N,ReIm[OptionValue[regulator]]//N];
 output=Table[Complex@@RawMemoryRead[res,i],{i,0,Length[integrals]-1}];
 arrayDelF[res];
@@ -126,7 +154,15 @@ funcMem=RawMemoryExport[functions,"OpaqueRawPointer"];
 resMem=RawMemoryExport[residues,{"CDouble","CDouble"}];
 integralLists=Prepend[#-1,Length[#]]&/@integrals;
 integralMemberMem=RawMemoryExport[#,"UnsignedInteger64"]&/@integralLists;
-integralMem=RawMemoryExport[integralMemberMem,"RawPointer"::["UnsignedInteger64"]];
+integralMem=RawMemoryExport[integralMemberMem,\!\(\*
+TagBox[
+StyleBox[
+RowBox[{
+RowBox[{"TypeSpecifier", "[", "\"\<RawPointer\>\"", "]"}], "[", "\"\<UnsignedInteger64\>\"", "]"}],
+ShowSpecialCharacters->False,
+ShowStringCharacters->True,
+NumberMarks->True],
+FullForm]\)];
 res=treeIntegrateSplitF[N[ReIm[zVal]],funcMem,resMem,Length[residues],integralMem,Length[integrals],OptionValue[epsAbs]//N,OptionValue[epsRel]//N,OptionValue[hStart]//N,OptionValue[hMax]//N,OptionValue[startRegulator]//N,OptionValue[baseRange]//N,ReIm[OptionValue[regulator]]//N];
 output=Table[Complex@@RawMemoryRead[res,i],{i,0,Length[integrals]-1}];
 arrayDelF[res];
@@ -167,13 +203,14 @@ Sum[1/k!*Product[asL[[j, 2]], {j, k}]*safePower[Log[zVal/regulator],k]*rFun[asL[
 ];
 
 Options[integCore] = Options[NDSolveValue];
-integCore[integrands__, zVal_, startT_, stopT_, initialVals_, OptionsPattern[]] := Module[{intL = {integrands}, t, matr, functions, wrapper, args, f},
+integCore[integrands__, zVal_, startT_, stopT_, initialVals_, OptionsPattern[]] := Module[{intL = {integrands},rhs, t, i,functions, wrapper, args, f},
 wrapper[f_, x_] /; NumericQ[x] :=f[x] /. {ComplexInfinity -> 0, Indeterminate -> 0};
-matr =DiagonalMatrix[wrapper[#, zVal*t] & /@ intL, -1,TargetStructure -> "Sparse"][[2 ;;]];
 functions = f[#][t] & /@ Range[Length[intL]];
-args = Prepend[functions, 1];
 
-NDSolveValue[{D[functions, t] == zVal*matr . args,initialVals == functions /. t -> startT}, functions /. t -> stopT, {t, startT, stopT},Sequence @@ (# -> OptionValue[#] & /@Options[NDSolveValue][[All, 1]])]
+rhs = Table[zVal * wrapper[intL[[i]], zVal * t] * functions[[i-1]], {i, 2, Length[intL]}];
+PrependTo[rhs, zVal * wrapper[intL[[1]], zVal * t]];
+
+NDSolveValue[{D[functions, t] == rhs, initialVals == functions /. t -> startT}, functions /. t -> stopT, {t, startT, stopT},Sequence @@ (# -> OptionValue[#] & /@Options[NDSolveValue][[All, 1]])]
 ];
 
 Options[execIntegration] =
@@ -364,8 +401,8 @@ splittingTreeIntegrate[integrands_List, integrals_List, zVal_,
 IIntegral[z_]:=1;
 kernelResidue[regulated[name_]]:=0;
 kernelResidue[pole[name_]]:=kernelResidue[name];
-kernelExpression[regulated[name_]]:=kernelExpression[name][#] -Quiet[kernelResidue[name]/#] &;
-kernelExpression[pole[name_]]:=Quiet[kernelResidue[name]/#]&;
+kernelExpression[regulated[name_]]:=If[# == 0, 0, kernelExpression[name][#] - kernelResidue[name]/#] &;
+kernelExpression[pole[name_]]:=If[# == 0, 0, kernelResidue[name]/#]&;
 
 
 convWrapExt[name_]:=Block[{},
