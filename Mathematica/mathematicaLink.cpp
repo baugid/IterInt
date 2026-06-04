@@ -1,32 +1,10 @@
-#include "integratorBase.hpp"
-#include "integratorGSL.hpp"
+#include "../cpp/IterInt/integratorGSL.hpp"
 #include <cstdint>
 
 extern "C" {
 struct cmplxType {
   double re, im;
 };
-
-cmplxType invFunc(std::complex<double> x) {
-  if (x == std::complex<double>{})
-    return {0, 0};
-  auto res = 1. / x;
-  return {res.real(), res.imag()};
-}
-
-cmplxType shift1(std::complex<double> x) {
-  auto res = 1. / (x - 1.);
-  return {res.real(), res.imag()};
-}
-
-cmplxType shift3(std::complex<double> x) {
-  auto res = 1. / (x - 3.);
-  return {res.real(), res.imag()};
-}
-cmplxType shift5(std::complex<double> x) {
-  auto res = 1. / (x - 5.);
-  return {res.real(), res.imag()};
-}
 
 cmplxType
 plainIntegrate(std::complex<double> zMax,
